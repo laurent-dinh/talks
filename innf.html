@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Normalizing flows</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+		<link rel="stylesheet" href="ld_day.css" id="theme">
+		<link rel="stylesheet" href="reveal.js/plugin/highlight/monokai.css">
+		<link rel="preload" as="style" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/fontawesome.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/solid.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/brands.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="shortcut icon" href="/assets/img/logo.ico" type="image/x-icon">
+		<style type="text/css">
+			.myrangeslider {
+				-webkit-appearance: none;
+				height: 10px;
+				width: 80%;
+				opacity: .75;
+				cursor: pointer;
+				background: #666666;
+			}
+
+			.myrangeslider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				height: 30px;
+				width: 30px;
+				border-radius: 15px;
+				cursor: pointer;
+				background: #8c2323;
+				opacity: 1;
+			}
+
+			.myrangeslider::-moz-slider-thumb {
+				height: 30px;
+				width: 30px;
+				border-radius: 15px;
+				cursor: pointer;
+				background: #8c2323;
+				opacity: 1;
+			}
+
+			#header-left {
+				position: absolute;
+				top: 0%;
+				left: 0%;
+			}
+			#header-right {
+				position: absolute;
+				top: 0%;
+				right: 0%;
+			}
+			#footer-left {
+				position: absolute;
+				bottom: 0%;
+				left: 0%;
+			}
+
+			.faded {
+				opacity: .25;
+			}
+
+			.reveal ul {
+				padding-left: 0px;
+				list-style-type: none;
+			}
+
+			.reveal ul.table-content a {
+				color:  unset;
+			}
+
+			.collaborator {
+				background-clip: border-box;
+				background-size: cover;
+				background-position: center;
+				height: 98px;
+				width: 98px;
+				/*display: inline-block;*/
+				float: left;
+				margin: 1px;
+				padding: 0px;
+			}
+
+			.social {
+				font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="reveal">
+
+			<a id="light-switch" style="position: fixed; z-index: 100; left: 10px; top:10px; font-size: 20px;"></a>
+			<div class="slides">
+
+				<section data-transition="fade-in">
+					<embed style="height:750px; opacity: 0.5;" src='assets/point_cloud_flow_click.svg'/>
+					<h1 class="r-fit-text" style="position: relative; bottom: 450px;">Normalizing flows</h1>
+					<div class="social" style="position: relative; bottom: 450px;"><a href="https://laurent-dinh.github.io/"><h4>Laurent Dinh</h4></a></div>
+					<div class="social" style="position: absolute; bottom: 280px; left: 0%; font-size: 30px; text-align: left;">
+						<a href="https://twitter.com/laurent_dinh"><i class="fab fa-twitter"></i> @laurent_dinh</a> <br/>
+						<a href="http://github.com/laurent-dinh"><i class="fab fa-github"></i> laurent-dinh</a> <br/>
+					</div>
+				</section>
+				<section data-transition="fade-in">
+					<embed style="height:750px; opacity: 1;" src='assets/point_cloud_flow_click.svg'/>
+				</section>
+				<!-- 960 x 700 -->
+<!-- 
+				<section>
+					<a href="http://bengio.abracadoudou.com/"><div class="collaborator" style="background-image: url('http://bengio.abracadoudou.com/images/samy_apple_2021.jpg');"></div></a>
+					<a href="https://yoshuabengio.org/"><div class="collaborator" style="background-image: url('https://yoshuabengio.org/wp-content/uploads/2021/12/1.BENGIO_Yoshua_credit_Camille-Gladu-Drouin_dec2019-1-1-300x200.jpg');"></div></a>
+					<a href="http://www.sohldickstein.com/"><div class="collaborator" style="background-image: url('https://images.squarespace-cdn.com/content/v1/53d19eeae4b0d2c0c0eb410e/1414361996432-837PS73PS2YIG69T0A9Q/Jascha_profile.png?format=300w');"></div></a>
+					<a href="https://chinweihuang.com/"><div class="collaborator" style="background-image: url('https://chinweihuang.com/img/me.png');"></div></a>
+					<a href="https://csml.stats.ox.ac.uk/people/lelan/"><div class="collaborator" style="background-image: url('https://csml.stats.ox.ac.uk/img/people/lelan.jpg');"></div></a>
+					<a href="https://lindapetrini.github.io/"><div class="collaborator" style="background-image: url('https://scholar.googleusercontent.com/citations?view_op=view_photo&user=a5siqi0AAAAJ&citpid=1');"></div></a>
+					<a href="http://www.dumitru.ca/"><div class="collaborator" style="background-image: url('https://pbs.twimg.com/profile_images/1292956160727715840/Lnc7E4_a_400x400.jpg');"></div></a>
+					<a href="https://scholar.google.ca/citations?user=3Y4egcYAAAAJ"><div class="collaborator" style="background-image: url('https://scholar.googleusercontent.com/citations?view_op=view_photo&user=3Y4egcYAAAAJ&citpid=2');"></div></a>
+					<a href="https://manojbits.wordpress.com/"><div class="collaborator" style="background-image: url('https://media-exp1.licdn.com/dms/image/C5603AQHi4Sri4PkY3g/profile-displayphoto-shrink_200_200/0/1588580729082?e=1657756800&v=beta&t=J0vAf3UNiCaK187p5ubHXqQxavHTl7_Y6a82uEkLza4');"></div></a>
+					<a href="http://dpkingma.com/"><div class="collaborator" style="background-image: url('http://dpkingma.com/files/portrait.jpg');"></div></a>
+					<a href="https://ai.stanford.edu/~cbfinn/"><div class="collaborator" style="background-image: url('https://ai.stanford.edu/~cbfinn/_files/sail_headshot_left_facing_crop.jpg');"></div></a>
+					<a href="http://users.ics.aalto.fi/praiko/"><div class="collaborator" style="background-image: url('https://i1.rgstatic.net/ii/profile.image/272401049059334-1441956879440_Q512/Tapani-Raiko.jpg');"></div></a>
+					<a href="https://scholar.google.com/citations?user=w_bDsscAAAAJ&hl=sv"><div class="collaborator" style="background-image: url('https://deeplearningworld.de/wp-content/uploads/sites/19/2020/03/6928-800x800.jpg');"></div></a>
+					<a href="https://mila.quebec/en/person/guillaume-alain-2/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2019/08/guillaume_alain_400x700-400x400.jpg');"></div></a>
+					<a href="https://sites.google.com/view/razp"><div class="collaborator" style="background-image: url('https://lh5.googleusercontent.com/xCEQqrGkSXdYZi08TzguAQ-MqMKnRJR02xp3gJxji7Mxxv7Iiu3p8bA0NUAXvcuMdyRz1S8IJx0bu6THjAgYTkqQdr6QG8xxsko3_XmN-DcJX8Zr=w1280');"></div></a>
+					<a href="http://dustintran.com/"><div class="collaborator" style="background-image: url('http://dustintran.com/img/photo.png');"></div></a>
+					<a href="http://keyonvafa.com/"><div class="collaborator" style="background-image: url('http://keyonvafa.com/assets/images/columbiaID6copy.jpg');"></div></a>
+					<a href="https://people.eecs.berkeley.edu/~krishna/"><div class="collaborator" style="background-image: url('https://avatars.githubusercontent.com/u/5628798');"></div></a>
+					<a href="https://cs.stanford.edu/~poole/"><div class="collaborator" style="background-image: url('https://cs.stanford.edu/~poole/img/headcircle.png');"></div></a>
+					<a href="https://redwood.berkeley.edu/people/brian-cheung/"><div class="collaborator" style="background-image: url('https://redwood.berkeley.edu/wp-content/uploads/2018/01/brian_cheung_profile_pic-345x345.jpg');"></div></a>
+					<a href="https://www.microsoft.com/en-us/research/people/rvandenberg/"><div class="collaborator" style="background-image: url('https://www.microsoft.com/en-us/research/uploads/prod/2021/10/profile_photo-3.png');"></div></a>
+					<a href="https://jmtomczak.github.io/"><div class="collaborator" style="background-image: url('https://jmtomczak.github.io/assets/img/jakub_tomczak.jpg');"></div></a>
+					<a href="http://elarosca.net/"><div class="collaborator" style="background-image: url('http://elarosca.net/me_small.jpg');"></div></a>
+					<a href="https://sites.google.com/ualberta.ca/mahdi"><div class="collaborator" style="background-image: url('https://lh4.googleusercontent.com/VxQr2XSJ1PaZrSwDrVhBaW8-pLkl1QfMZm93B_qW4Td1L1mUFVLZ1XDP5QSBxuemlELhnXaY_kDF5M0OXt_E16dbtCL0oSwbOv14xsslH_Q=w1280');"></div></a>
+					<a href="https://webdocs.cs.ualberta.ca/~dale/"><div class="collaborator" style="background-image: url('https://simons.berkeley.edu/sites/default/files/styles/profile_main/public/daleschuurmans2016.jpg');"></div></a>
+					<a href="https://www.stronglyconvex.com/about.html"><div class="collaborator" style="background-image: url('https://pbs.twimg.com/profile_images/1253616023774822404/3VyCnurL_400x400.jpg');"></div></a>
+					<a href="https://sites.google.com/view/junyoung-ai/"><div class="collaborator" style="background-image: url('https://lh3.googleusercontent.com/k-_VgrMHtVbBM2qh_ejGB32oCAUaQ6JMwMQp_s_wZGztecWzz4VoSV7k_a6sngnh4GJZpa_6xgb9xVDrWXh2yjQPQRNA7V7B3lv3N68ee5uhBlPc=w1280');"></div></a>
+					<a href="https://kastnerkyle.github.io/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/03/13495637_10210163977965401_4770750898840554744_o-Edited.jpg');"></div></a>
+					<a href="https://www.linkedin.com/in/kratarth-goel-98b37741"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/03/kratarth_goel.jpg');"></div></a>
+					<a href="https://mila.quebec/en/person/aaron-courville/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/02/2-Aaron-Couvrille_2760-Udem-509x676.jpg');"></div></a>
+					<a href="http://bamos.github.io/"><div class="collaborator" style="background-image: url('http://bamos.github.io/images/me.png');"></div></a>
+					<a href="https://rtqichen.github.io/"><div class="collaborator" style="background-image: url('https://rtqichen.github.io//headshot.jpg');"></div></a>
+					<a href="https://kyunghyuncho.me/"><div class="collaborator" style="background-image: url('https://cims.nyu.edu/people/profiles/images/Cho_Kyunghyun.jpg');"></div></a>
+					<a href="https://avdnoord.github.io/homepage/"><div class="collaborator" style="background-image: url('https://avdnoord.github.io/homepage/images/photo.jpg');"></div></a>
+					<a href="https://mila.quebec/en/person/cesar-laurent/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/03/me2.jpeg');"></div></a>
+					<a href="https://www.cs.toronto.edu/~ilya/"><div class="collaborator" style="background-image: url('https://wp.technologyreview.com/wp-content/uploads/2015/08/tr35.vis_.sutskeverx355-7.jpg');"></div></a>
+					<a href="https://sites.google.com/site/adriromsor/home"><div class="collaborator" style="background-image: url('https://lh3.googleusercontent.com/E0l7t0Jr6kuO3f27mzfQq05lSdZhaPIvc5pr_B247kuu2PmV-aMS3UmH4VeBPfXIegflcnd-hIU49ga47DqBSSld0RM6snN2n7nIAd1YpfXlpr-Fxii6oiPTCtH6eDU2AA=w1280');"></div></a>
+					<a href="https://ziyuw.github.io/"><div class="collaborator" style="background-image: url('https://ziyuw.github.io/img/portrait.jpg');"></div></a>
+					<a href="https://dwf.name/"><div class="collaborator" style="background-image: url('https://avatars.githubusercontent.com/u/60206?v=4');"></div></a>
+					<a href="https://www.dauphin.io/"><div class="collaborator" style="background-image: url('https://custom-images.strikinglycdn.com/res/hrscywv4p/image/upload/c_limit,fl_lossy,h_9000,w_1200,f_auto,q_auto/29096/Yann_Dauphin-6774-smaller_hl4uhi.jpg');"></div></a>
+					<a href="https://scholar.google.ca/citations?user=LWrdpCsAAAAJ&hl=en"><div class="collaborator" style="background-image: url('https://pbs.twimg.com/profile_images/911737360332726273/X28dU_at_400x400.jpg');"></div></a>
+					<a href="https://danilorezende.com/about/"><div class="collaborator" style="background-image: url('https://pbs.twimg.com/profile_images/1007986229244235776/gL-Rpz25_400x400.jpg');"></div></a>
+					<a href="https://shakirm.com"><div class="collaborator" style="background-image: url('https://shakirm.com/images/shakir_cuba1.jpg');"></div></a>
+					<a href="https://www.iangoodfellow.com/"><div class="collaborator" style="background-image: url('https://www.iangoodfellow.com/headshot.jpg');"></div></a>
+					<a href="https://mila.quebec/en/person/lamblin-pascal/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/02/Lamblin_Pascal_6900-1-509x676.jpg');"></div></a>
+					<a href="https://mila.quebec/en/person/bergeron-arnaud/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/03/moi-509x676.jpg');"></div></a>
+					<a href="https://shlens.github.io/"><div class="collaborator" style="background-image: url('https://shlens.github.io/img/jon.jpg');"></div></a>
+					<a href="https://ch.linkedin.com/in/fr%C3%A9d%C3%A9ric-bastien-4bb9513b"><div class="collaborator" style="background-image: url('https://media-exp1.licdn.com/dms/image/C5603AQEU-13Xbovhqg/profile-displayphoto-shrink_200_200/0/1516883867065?e=2147483647&v=beta&t=OZNixeLK8omIf0J2lHSiPU20kN-GEHLEdGuQE4WLKXo');"></div></a>
+					<a href="https://lvilnis.github.io"><div class="collaborator" style="background-image: url('https://lvilnis.github.io/profile-3.png');"></div></a>
+					<a href="https://www.mi.fu-berlin.de/en/math/groups/ai4s/staff/noe/index.html"><div class="collaborator" style="background-image: url('https://www.mi.fu-berlin.de/en/math/groups/ai4s/staff/_staff_pics/member_frank1.jpg?width=350');"></div></a>
+					<a href="https://www.mi.fu-berlin.de/en/math/groups/ai4s/staff/koehler/index.html"><div class="collaborator" style="background-image: url('https://www.mi.fu-berlin.de/en/math/groups/ai4s/staff/_staff_pics/member_jonas.jpg');"></div></a>
+					<a href="https://www.davidscottkrueger.com/"><div class="collaborator" style="background-image: url('https://scholar.googleusercontent.com/citations?view_op=view_photo&user=5Uz70IoAAAAJ&citpid=4');"></div></a>
+					<a href="https://dblp.org/pid/162/0003.html"><div class="collaborator" style="background-image: url('https://avatarcdn.aminer.cn/upload/avatar/1395/1665/238/562c7bc245cedb3398c36ee5_0.jpeg!160');"></div></a>
+					<a href="https://as.nyu.edu/faculty/kyle-s-cranmer.html"><div class="collaborator" style="background-image: url('https://as.nyu.edu/content/dam/nyu-as/faculty/images/cranmer-kyle.jpg');"></div></a>
+					<a href="https://jhjacobsen.github.io/"><div class="collaborator" style="background-image: url('https://jhjacobsen.github.io/me.jpg');background-position: right;"></div></a>
+					<a href="https://jens-behrmann.netlify.app/"><div class="collaborator" style="background-image: url('https://jens-behrmann.netlify.app/authors/admin/avatar_huc4e45f3223f52833920c7545dae80dd2_2856517_270x270_fill_q75_lanczos_center.jpg');"></div></a>
+					<a href="https://mila.quebec/en/person/hugo-larochelle/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/10/photo_hugo_Larochelle-highres-509x676.jpg');"></div></a>
+					<a href="https://maithraraghu.com/"><div class="collaborator" style="background-image: url('https://maithraraghu.com/assets/img/prof_pic_taata.jpg');"></div></a>
+					<a href="https://scholar.google.com/citations?user=wHcpf58AAAAJ&hl=en"><div class="collaborator" style="background-image: url('https://www.research.ed.ac.uk/files-asset/61149220/Papamakarios.jpg');"></div></a>
+					<a href="https://prafulladhariwal.com/"><div class="collaborator" style="background-image: url('https://prafulladhariwal.com/assets/imgs/profile.jpg');"></div></a>
+					<a href="https://staff.fnwi.uva.nl/m.welling/"><div class="collaborator" style="background-image: url('https://staff.fnwi.uva.nl/m.welling/wp-content/uploads/Max-Welling_0633-LR-small-289x300.jpg');"></div></a>
+					<a href="https://enalisnick.github.io/"><div class="collaborator" style="background-image: url('https://enalisnick.github.io/Nalisnick_Headshot.jpeg');"></div></a>
+					<a href="http://www.gatsby.ucl.ac.uk/~balaji/"><div class="collaborator" style="background-image: url('https://pbs.twimg.com/profile_images/923795406244515840/OjwqxWdC_400x400.jpg');"></div></a>
+
+				</section>
+ -->
+				<section data-markdown style="line-height: 175%;">
+					<textarea data-template>
+					- Probabilistic modelling
+						- Density estimation
+						- Generative modelling
+						- Variational inference
+						- Variance reduction  
+					- Memory-efficient backpropagation  
+					- New perspective on probabilistic models  
+					- ...
+					</textarea>
+				</section>
+				<section data-auto-animate>
+					<ul class="table-content" style="line-height: 200%;">
+						<li><a href="#/context">Context</a></li>
+						<li><a href="#/first-principle">First principle</a></li>
+						<li><a href="#/computation">Computation</a></li>
+						<li><a href="#/sample-results">Sample results</a></li>
+						<li><a href="#/afterwords">Afterword</a></li>
+					</ul>
+				</section>
+				<section data-auto-animate id="context">
+					<ul class="table-content" style="line-height: 200%;">
+						<li><a href="#/context">Context</a></li>
+						<li class="faded"><a href="#/first-principle">First principle</a></li>
+						<li class="faded"><a href="#/computation">Computation</a></li>
+						<li class="faded"><a href="#/sample-results">Sample results</a></li>
+						<li class="faded"><a href="#/afterwords">Afterword</a></li>
+					</ul>
+				</section>
+				<section>
+					<h1>Deep generative models</h1>
+				</section>
+				<section data-auto-animate>
+					<h2 class="r-fit-text">Restricted Boltzmann Machines</h2>
+					<img height="400px" src='assets/rbm_slides_diagram.svg'/>
+					<span style="font-size: 30px;">\[p(x_1, x_2, x_3 \mid z) = \prod_{d=1}^{3}{p(x_d \mid z)}\]</span>
+				</section>
+				<section data-auto-animate>
+					<h2 class="r-fit-text">Restricted Boltzmann Machines</h2>
+					<img height="400px" src='assets/rbm_slides_diagram.svg'/>
+					<span style="font-size: 30px;">\[p(z_1, z_2, z_3, z_4 \mid x) = \prod_{d=1}^{4}{p(z_d \mid x)}\]</span>
+				</section>
+				<section>
+					<h2>Autoregressive models</h2>
+					<embed class="r-stretch" src='assets/arm_direct_diagram.svg'/>
+				</section>
+				<section data-auto-animate>
+					<h2>Generator Networks</h2>
+					<img data-id="1" height="300px" src='assets/gnet_slides_diagram.svg'/>
+				</section>
+				<section data-auto-animate>
+					<h2>Generator Networks</h2>
+					<h4>Variational autoencoders</h4>
+					<img data-id="1" height="300px" src='assets/vae_slides_diagram.svg'/>
+					\[ELBO\big(p^{(\theta)}(x, z), q^{(\phi)}(z \mid x)\big) \\ \geq \log\big(p^{(\theta)}(x)\big)\]
+				</section>
+				<section data-auto-animate>
+					<h2>Generator Networks</h2>
+					<h4>Generative adversarial networks</h4>
+					<img height="300px" src='assets/gan_slides_diagram.svg'/>
+				</section>
+				<section data-auto-animate data-auto-animate-restart>
+					<h2>Autoencoders</h2>
+					<img height="400px" src='assets/ae_slides_diagram.svg'/>
+				</section>
+				<section data-auto-animate>
+					<h2>Autoencoders</h2>
+					<img class="r-stretch" src='assets/ae_slides_diagram.svg'/>
+					<span style="font-size: 60px;">\[g = f^{-1}\]</span>
+				</section>
+				<section id="first-principle">
+					<ul class="table-content" style="line-height: 200%;">
+						<li class="faded"><a href="#/context">Context</a></li>
+						<li><a href="#/first-principle">First principle</a></li>
+						<li class="faded"><a href="#/computation">Computation</a></li>
+						<li class="faded"><a href="#/sample-results">Sample results</a></li>
+						<li class="faded"><a href="#/afterwords">Afterword</a></li>
+					</ul>
+				</section>
+				<section>
+					<p>$z = f^{(\theta)}(x)$ with $f^{(\theta)}$ invertible</p>
+					<span style="font-size: 60px;">\[p_X(x) = p_Z\big(f^{(\theta)}(x)\big) \left\lvert\frac{\partial f^{(\theta)}(x)}{\partial x}\right\rvert\]</span>
+				</section>
+				<section>
+					<embed class="r-stretch" src='assets/cov_innf_plot.svg'/>
+				</section>
+				<section>
+					<span class="fragment fade-out" data-fragment-index="1" style="position: absolute; top: 50%;left: 10px;font-size: 45px;">\[p_X(x) = p_Z\big(f^{(\theta)}(x)\big) \left\lvert\frac{\partial f^{(\theta)}(x)}{\partial x}\right\rvert\]</span>
+					<span class="fragment fade-in" data-fragment-index="1" style="position: absolute; top: 50%;left: 10px;font-size: 45px;">\[p_X(x) = p_Z\big(f^{(\theta)}(x)\big) \left\lvert\det\left(\frac{\partial f^{(\theta)}(x)}{\partial x}\right)\right\rvert\]</span>
+				</section>
+				<section style="line-height: 150%;">
+					<embed class="r-stretch" src='assets/det_slides_diagram.svg'/>
+					<ul>
+						<li>local change of volume</li>
+						<li>density is $\frac{mass}{volume}$</li>
+					</ul>
+				</section>
+				<section>
+					\[
+						\begin{aligned}
+						\log\big(p_X(x)\big) = &amp; \textcolor{#238c23}{\log\left(p_Z\big(f^{(\theta)}(x)\big)\right)} \\
+						+ &amp;\textcolor{#8c2323}{\log\left({\left\lvert\det\left(\frac{\partial f^{(\theta)}}{\partial x}\right)\right\rvert}\right)}
+						\end{aligned}
+					\]
+				</section>
+				<section id="computation">
+					<ul class="table-content" style="line-height: 200%;">
+						<li class="faded"><a href="#/context">Context</a></li>
+						<li class="faded"><a href="#/first-principle">First principle</a></li>
+						<li><a href="#/computation">Computation</a></li>
+						<li class="faded"><a href="#/sample-results">Sample results</a></li>
+						<li class="faded"><a href="#/afterwords">Afterword</a></li>
+					</ul>
+				</section>
+				<section>
+					<h1>Computing the Jacobian determinant</h1>
+				</section>
+				<section data-markdown style="line-height: 300%;">
+					<textarea data-template>
+						- diagonal matrix/elementwise bijection
+						- small matrix/dimensionality
+						- block diagonal
+					</textarea>
+				</section>
+				<section data-markdown style="line-height: 300%;">
+					<textarea data-template>
+						### Unidimensional case
+						- invertible 1D neural network
+						- splines
+						- polynomials
+					</textarea>
+				</section>
+				<!-- <section>
+					<h3>Sylvester normalizing flow</h3>
+					<span style="font-size: 60px;">
+					\[
+						\begin{aligned}
+						x = &amp;x_{\parallel} + x_{\perp} \\
+						z = f^{(\theta)}_{\parallel}(&amp;x_{\parallel}) + x_{\perp}
+						\end{aligned}
+					\]
+					</span>
+				</section> -->
+				<section>
+					<embed class="r-stretch" src='assets/ar_mlp_diagram.svg'/>
+				</section>
+				<section>
+					<embed class="r-stretch" src='assets/coupling_diagram.svg'/>
+				</section>
+				<section>
+					<embed class="r-stretch" src='assets/compose_diagram.svg'/>
+					<span style="font-size: 25px;" class="fragment fade-in">
+					\[
+						(g \circ f)^{-1} = f^{-1} \circ g^{-1}
+					\]
+					\[
+						\frac{\partial (g \circ f)(x)}{\partial x} = \frac{\partial (g \circ f)(x)}{\partial f(x)} \frac{\partial f(x)}{\partial x}
+					\]
+					\[
+						\det{A \cdot B} = \det(A) \cdot \det(B)
+					\]
+					</span>
+				</section>
+				<section>
+					<h3>Sylvester coupling layer</h3>
+					<span style="font-size: 60px;">
+					\[
+						\begin{aligned}
+						x_1 &amp;\longleftrightarrow x_{\parallel} \\
+						x_2 &amp;\longleftrightarrow x_{\perp}
+						\end{aligned}
+					\]
+					</span>
+				</section>
+				<section>
+					<h3 style="margin-bottom: 50px;">I+Contraction flow</h3>
+					<span style="font-size: 45px;">
+					$f(\theta): x \mapsto x + g^{(\theta)}(x)$ with $g^{(\theta)}$ contraction
+					<br/><br/>
+					</span>
+					<span style="font-size: 30px;">
+					\[
+						\begin{aligned}
+						\log\left(\left\lvert\det\left(I + \frac{\partial g^{(\theta)}(x)}{\partial x}\right)\right\rvert\right) &amp;= tr\left(\log\left(I + \frac{\partial g^{(\theta)}(x)}{\partial x}\right)\right) \\
+						&amp;= \sum_{k=1}^{\infty}{\frac{(-1)^{k+1}}{k}tr\left(\left(\frac{\partial g^{(\theta)}(x)}{\partial x}\right)^{k}\right)}
+						\end{aligned}
+					\]
+					</span>
+				</section>
+				<section data-markdown style="line-height: 200%;">
+					<textarea data-template>
+						### Inversion
+						- closed form
+						- bisection/binary search
+						- gradient descent
+						- fixed point equation
+						- approximate iterative inversion
+					</textarea>
+				</section>
+				<section>
+					<img src="assets/multiscale_0_slides_diagram.svg" width="900px"/>
+				</section>
+				<section id="sample-results">
+					<ul class="table-content" style="line-height: 200%;">
+						<li class="faded"><a href="#/context">Context</a></li>
+						<li class="faded"><a href="#/first-principle">First principle</a></li>
+						<li class="faded"><a href="#/computation">Computation</a></li>
+						<li><a href="#/sample-results">Sample results</a></li>
+						<li class="faded"><a href="#/afterwords">Afterword</a></li>
+					</ul>
+				</section>
+				<section>
+					<img id="compressionDiagram" src="assets/multiscale_1_slides_diagram.svg" width="600px" style="margin: 0px;"/>
+					<img id="compressionImage" src="assets/compression_0.png" height="500px" style="height: 300px; width: 500px; object-fit: cover; margin: 0px;"/>
+					<div class="rangeslider">
+						<input type="range" min="0" max="4" value="0" class="myrangeslider" id="compressionSliderRange">
+					</div>
+				</section>
+				<section>
+					<img src="assets/glow_samples.png" height="600px"/>
+				</section>
+				<section>
+					<img src="assets/imnet_samples.png" height="470px"/>
+					<img src="assets/celeba_samples.png" height="470px"/>
+				</section>
+				<section>
+					<img src="assets/imnet_manifold.gif" height="470px"/>
+					<img src="assets/celeba_manifold.gif" height="470px"/>
+				</section>
+				<section id="afterwords">
+					<ul class="table-content" style="line-height: 200%;">
+						<li class="faded"><a href="#/context">Context</a></li>
+						<li class="faded"><a href="#/first-principle">First principle</a></li>
+						<li class="faded"><a href="#/computation">Computation</a></li>
+						<li class="faded"><a href="#/sample-results">Sample results</a></li>
+						<li><a href="#/afterwords">Afterword</a></li>
+					</ul>
+				</section>
+				<section data-markdown style="line-height: 200%;">
+					<textarea data-template>
+						## Implications
+						- Autoregressive models as normalizing flows
+						- VAEs as normalizing flows
+						- Dimensionality reduction to organizing features
+						- Function with known inverse/integral
+						- Non-unique gaussian features
+						- Density and typicality
+					</textarea>
+				</section>
+				<section data-markdown style="line-height: 250%;">
+					<textarea data-template>
+						## Connected topics
+						- Neural ODE
+						- Diffusion models
+						- Semi-discrete flows
+						- Probabilistic circuits
+					</textarea>
+				</section>
+				<section>
+					<h2>Contributions</h2>
+					<ul style="line-height: 250%;">
+						<li>Scalable implementation of normalizing flow</li>
+						<li>Invertible residual layer</li>
+						<li>Probabilistic toolset</li>
+						<li>New perspective on probabilistic models</li>
+					</ul>
+					<div class="social" style="position: absolute; bottom: -105px; left: 0%; font-size: 30px; text-align: left;">
+						<a href="https://twitter.com/laurent_dinh"><i class="fab fa-twitter"></i> @laurent_dinh</a> <br/>
+						<a href="http://github.com/laurent-dinh"><i class="fab fa-github"></i> laurent-dinh</a> <br/>
+					</div>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			// night mode
+			function getDarkVariable() {
+				try {
+					return localStorage.getItem("dark");
+				}
+				catch(e) {
+					return false;
+				 }
+			}
+			function setDarkVariable(value_) {
+				try {
+					localStorage.setItem("dark", value_);
+				}
+				finally {
+					0;
+				}
+			}
+			function SetToLightMode() {
+				$("#light-switch").attr(
+					"class",
+					(/true/i).test(getDarkVariable())
+					? "fas fa-sun"
+					: "fas fa-moon");
+				$("#theme").attr("href",
+					(/true/i).test(getDarkVariable())
+					? "ld_dark.css"
+					: "ld_day.css");
+			}
+			try {
+				setDarkVariable(false);
+				SetToLightMode();
+				$("#light-switch").on("click", function(event) {
+					setDarkVariable(
+						!(/true/i).test(getDarkVariable()));
+					SetToLightMode();
+				});
+				$("#light-switch").css({cursor: "pointer"})
+			}
+			catch(e) {
+				SetToLightMode();
+				$("#light-switch").attr("class", "");
+			}
+		</script>
+		<script type="text/javascript">
+			var header = $('#header').html();
+			if ( window.location.search.match( /print-pdf/gi ) ) {
+				$('.slides > section').prepend(header);
+			}
+			else {
+				$('.slides').prepend(header);
+			}
+		</script>
+		<script>
+			var rangeslider = document.getElementById("compressionSliderRange");
+			var output1 = document.getElementById("compressionImage");
+			var output2 = document.getElementById("compressionDiagram");
+			
+			rangeslider.oninput = function() {
+				output1.src = ("assets/compression_" + rangeslider.value.toString() + ".png");
+				output2.src = ("assets/multiscale_" + (parseInt(rangeslider.value) + 1).toString() + "_slides_diagram.svg");
+			}
+		</script>
+		<script>
+			Reveal.initialize({
+				center: true,
+				hash: true,
+				controls: true,
+				progress: true,
+				plugins: [ RevealHighlight, RevealMarkdown, RevealMath.KaTeX ],
+				backgroundTransition: 'fade',
+				katex: {
+					version: 'latest',
+					ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+				},
+			});
+		</script>
+
+	</body>
+</html>

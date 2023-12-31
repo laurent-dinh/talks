@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Density and typicality</title>
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="reveal.js/dist/reveal.css">
+		<link rel="stylesheet" href="ld_day.css" id="theme">
+		<link rel="stylesheet" href="reveal.js/plugin/highlight/monokai.css">
+		<link rel="preload" as="style" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/fontawesome.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/solid.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/brands.min.css" onload="this.onload=null;this.rel='stylesheet'">
+		<link rel="shortcut icon" href="/assets/img/logo.ico" type="image/x-icon">
+		<style type="text/css">
+			.myrangeslider {
+				-webkit-appearance: none;
+				height: 10px;
+				width: 80%;
+				opacity: .75;
+				cursor: pointer;
+				background: #666666;
+			}
+
+			.myrangeslider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				height: 30px;
+				width: 30px;
+				border-radius: 15px;
+				cursor: pointer;
+				background: #8c2323;
+				opacity: 1;
+			}
+
+			.myrangeslider::-moz-slider-thumb {
+				height: 30px;
+				width: 30px;
+				border-radius: 15px;
+				cursor: pointer;
+				background: #8c2323;
+				opacity: 1;
+			}
+
+			#header-left {
+				position: absolute;
+				top: 0%;
+				left: 0%;
+			}
+			#header-right {
+				position: absolute;
+				top: 0%;
+				right: 0%;
+			}
+			#footer-left {
+				position: absolute;
+				bottom: 0%;
+				left: 0%;
+			}
+
+			.faded {
+				opacity: .25;
+			}
+
+			.reveal ul {
+				padding-left: 0px;
+				list-style-type: none;
+			}
+
+			.reveal ul.table-content a {
+				color:  unset;
+			}
+
+			.collaborator {
+				background-clip: border-box;
+				background-size: cover;
+				background-position: center;
+				height: 148px;
+				width: 148px;
+				/*display: inline-block;*/
+				float: left;
+				margin: 1px;
+				padding: 0px;
+			}
+
+			.social {
+				font-family: Menlo,Monaco,Consolas,"Courier New",monospace;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="reveal">
+			<a id="light-switch" style="position: fixed; z-index: 1000; left: 10px; top:10px; font-size: 20px;"></a>
+
+			<div class="slides">
+				<section data-transition="fade-in">
+					<embed style="height:750px; opacity: 0.5;" src='assets/cov_ood_title_plot.svg'/>
+					<h1 class="r-fit-text" style="position: relative; bottom: 450px;">Density and typicality</h1>
+					<div style="position: relative; bottom: 450px;"><a href="https://laurent-dinh.github.io/"><h4>Laurent Dinh</h4></a></div>
+					<div class="social" style="position: absolute; bottom: 250px; left: 0%; font-size: 30px; text-align: left;">
+						<a href="https://twitter.com/laurent_dinh"><i class="fab fa-twitter"></i> @laurent_dinh</a> <br/>
+						<a href="http://github.com/laurent-dinh"><i class="fab fa-github"></i> laurent-dinh</a> <br/>
+					</div>
+				</section>
+				<section data-transition="fade-in">
+					<embed style="height:750px; opacity: 1;" src='assets/cov_ood_title_plot.svg'/>
+				</section>
+				<section>
+					<a href="https://csml.stats.ox.ac.uk/people/lelan/"><div class="collaborator" style="background-image: url('https://csml.stats.ox.ac.uk/img/people/lelan.jpg');"></div></a>
+					<a href="http://dpkingma.com/"><div class="collaborator" style="background-image: url('http://dpkingma.com/files/portrait.jpg');"></div></a>
+					<a href="https://johannah.github.io/"><div class="collaborator" style="background-image: url('https://johannah.github.io/images/portrait_circle.png');"></div></a>
+					<a href="https://kastnerkyle.github.io/"><div class="collaborator" style="background-image: url('https://mila.quebec/wp-content/uploads/2016/03/13495637_10210163977965401_4770750898840554744_o-Edited.jpg');"></div></a>
+					<a href="https://polkirichenko.github.io/"><div class="collaborator" style="background-image: url('https://polkirichenko.github.io/polina.jpg');"></div></a>
+					<a href="https://izmailovpavel.github.io/"><div class="collaborator" style="background-image: url('https://izmailovpavel.github.io/imgs/sus.jpg');"></div></a>
+					<a href="https://evjang.com/"><div class="collaborator" style="background-image: url('https://cacm.acm.org/system/assets/0004/2008/011022_Gradient_Eric-Jang.large.jpg?1641829548&1641829548');"></div></a>
+					<a href="https://www.alexalemi.com/"><div class="collaborator" style="background-image: url('https://www.alexalemi.com/assets/images/me.jpg');"></div></a>
+					<a href="https://jhjacobsen.github.io/"><div class="collaborator" style="background-image: url('https://jhjacobsen.github.io/me.jpg'); background-position: right;"></div></a>
+					<a href="https://kyunghyuncho.me/"><div class="collaborator" style="background-image: url('https://cims.nyu.edu/people/profiles/images/Cho_Kyunghyun.jpg');"></div></a>
+					<a href="https://lvilnis.github.io"><div class="collaborator" style="background-image: url('https://lvilnis.github.io/profile-3.png');"></div></a>
+					<a href="http://www.gatsby.ucl.ac.uk/~balaji/"><div class="collaborator" style="background-image: url('https://pbs.twimg.com/profile_images/923795406244515840/OjwqxWdC_400x400.jpg');"></div></a>
+				</section>
+				<section data-transition="fade-in">
+					<img class="r-stretch" src='assets/density_scoring.svg'/>
+				</section>
+				<section data-transition="fade-in">
+					<img class="r-stretch" src='assets/density_scoring_revealed.svg'/>
+				</section>
+				<section>
+					<a class="r-stretch" href="https://arxiv.org/abs/1810.09136"><img class="r-stretch" src='assets/cifar_pixelcnn-tag_logprob_hist.svg'/></a>
+				</section>
+				<section>
+					<a href="https://commons.wikimedia.org/wiki/File:Bubble_3.jpg"><img class="r-stretch" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Bubble_3.jpg/800px-Bubble_3.jpg?20080120105657" style="border-radius: 50px;"></a>
+				</section>
+				<section>
+					<a href="https://en.wikipedia.org/wiki/Chi_distribution"><img id="radiusPlot" src="assets/chi_radius_0.svg" width="470px" style="margin: 0px;"/></a>
+					<a href="https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates"><img id="polarPlot" src="assets/spherical_circle_coord_gaussian_0.png" width="470px"style="margin: 0px;"/></a>
+					<div class="rangeslider">
+						<input type="range" min="0" max="14" value="0" class="myrangeslider" id="radiusSliderRange">
+					</div>
+				</section>
+				<section>
+					<span style="font-size: 30px;"">\[dx_1 \dots dx_D \\ = r^{D-1} \sin(\phi_1)^{D-2} \dots \sin(\phi_{D-2}) dr d\phi_1 \dots d\phi_{D -1}\]</span>
+					<a href="https://en.wikipedia.org/wiki/N-sphere#Spherical_coordinates"><img id="polarPlot" src="assets/spherical_sin_coord_gaussian_8.png" height="500px;" style="margin: 0px;"/></a>
+				</section>
+				<section>
+					<embed style="height:750px; opacity: 1;" src='assets/cov_ood_title_plot.svg'/>
+				</section>
+				<section>
+					<embed style="height:750px;" src='assets/point_cloud_flow_click.svg'/>
+				</section>
+				<section>
+					<embed class="r-stretch" src='assets/cov_innf_plot.svg'/>
+				</section>
+				<section>
+					$x$ or $f(x)$ are representations of the same (anomalous/typical) object
+				</section>
+				<section>
+					<embed height="700px" src='assets/cov_ood_plot.svg'/>
+					<div class="fragment fade-out" style="position: relative; background-color: var(--r-background-color); top: -186px; height: 187px; width: 100%;"></div>
+				</section>
+				<section>
+					<a href="https://arxiv.org/abs/1511.01844"><img id="polarPlot" src="assets/shifts_1_images_tspt.png" height="600px;" style="margin: 0px;"/></a>
+					<a href="https://arxiv.org/abs/1511.01844"><img id="polarPlot" src="assets/shifts_3_images_tspt.png" height="600px;" style="margin: 0px;"/></a>
+				</section>
+				<section>
+					<embed class="r-stretch" src='assets/invar_gauss.svg'/>
+				</section>
+				<section>
+					<span class="r-fit-text">Density/typicality equivalence may not apply to:</span>
+					<ul style="line-height: 350%; padding-left: 40px; list-style-type: disc; margin-top:40px;">
+						<li>Input features</li>
+						<li>Unsupervised features (even gaussianized)</li>
+						<li>Independently supervised features</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Radon–Nikodym derivative</h2>
+					<span style="font-size: 70px;">\[p = \frac{d \nu}{d \mu}\]</span>
+				</section>
+				<section>
+					<h2>Neyman–Pearson lemma</h2>
+					<span style="font-size: 70px;">\[T(x) \propto \frac{p^{(\theta_1)}(x)}{p^{(\theta_0)}(x)}\]</span>
+				</section>
+				<section>
+					<h2>Prior knowledge</h2>
+					<ul style="line-height: 250%; padding-left: 40px; list-style-type: disc; margin-top:40px;">
+						<li>on the representation</li>
+						<li>on the distribution of anomalies</li>
+						<li>on the functions of interest (e.g., reward)</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Contributions</h2>
+					<ul style="line-height: 250%;">
+						<li>Arbitrary manipulation of densities</li>
+						<li>Including distribution constraints</li>
+						<li>Revising the density/typicality relationships</li>
+					</ul>
+					<div class="social" style="position: absolute; bottom: -125px; left: 0%; font-size: 30px; text-align: left;">
+						<a href="https://twitter.com/laurent_dinh" class="social"><i class="fab fa-twitter"></i> @laurent_dinh</a> <br/>
+						<a href="http://github.com/laurent-dinh" class="social"><i class="fab fa-github"></i> laurent-dinh</a> <br/>
+					</div>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="reveal.js/dist/reveal.js"></script>
+		<script src="reveal.js/plugin/math/math.js"></script>
+		<script src="reveal.js/plugin/notes/notes.js"></script>
+		<script src="reveal.js/plugin/highlight/highlight.js"></script>
+		<script src="reveal.js/plugin/markdown/markdown.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script type="text/javascript">
+			// night mode
+			function getDarkVariable() {
+				try {
+					return localStorage.getItem("dark");
+				}
+				catch(e) {
+					return false;
+				 }
+			}
+			function setDarkVariable(value_) {
+				try {
+					localStorage.setItem("dark", value_);
+				}
+				finally {
+					0;
+				}
+			}
+			function SetToLightMode() {
+				$("#light-switch").attr(
+					"class",
+					(/true/i).test(getDarkVariable())
+					? "fas fa-sun"
+					: "fas fa-moon");
+				$("#theme").attr("href",
+					(/true/i).test(getDarkVariable())
+					? "ld_dark.css"
+					: "ld_day.css");
+			}
+			try {
+				setDarkVariable(false);
+				SetToLightMode();
+				$("#light-switch").on("click", function(event) {
+					setDarkVariable(
+						!(/true/i).test(getDarkVariable()));
+					SetToLightMode();
+				});
+				$("#light-switch").css({cursor: "pointer"})
+			}
+			catch(e) {
+				SetToLightMode();
+				$("#light-switch").attr("class", "");
+			}
+		</script>
+		<script type="text/javascript">
+			var header = $('#header').html();
+			if ( window.location.search.match( /print-pdf/gi ) ) {
+				$('.slides > section').prepend(header);
+			}
+			else {
+				$('.slides').prepend(header);
+			}
+		</script>
+		<script>
+			var rangeslider = document.getElementById("radiusSliderRange");
+			var output1 = document.getElementById("radiusPlot");
+			var output2 = document.getElementById("polarPlot");
+			
+			rangeslider.oninput = function() {
+				output1.src = ("assets/chi_radius_" + rangeslider.value.toString() + ".svg");
+				output2.src = ("assets/spherical_circle_coord_gaussian_" + (parseInt(rangeslider.value)).toString() + ".png");
+			}
+		</script>
+		<script>
+			Reveal.initialize({
+				center: true,
+				hash: true,
+				controls: true,
+				progress: true,
+				plugins: [ RevealHighlight, RevealMarkdown, RevealMath.KaTeX ],
+				backgroundTransition: 'fade',
+				katex: {
+					version: 'latest',
+					ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+				},
+			});
+		</script>
+
+	</body>
+</html>
